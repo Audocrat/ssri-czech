@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSRIs: Pod světlem</title>
+<style>
+  :root {
+    --bg: #111113;
+    --bg-surface: #1a1a1e;
+    --text: #d4d4d8;
+    --text-muted: #8b8b94;
+    --text-heading: #f0f0f3;
+    --accent: #c49a6c;
+    --accent-dim: #8b6d4a;
+    --border: #2a2a30;
+    --quote-bg: #16161a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 18px;
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Hero */
+  .hero {
+    padding: 100px 0 60px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero .epigraph {
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 17px;
+    line-height: 1.7;
+    max-width: 560px;
+    margin: 0 auto 12px;
+  }
+  .hero .epigraph-author {
+    color: var(--accent-dim);
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  /* TOC */
+  .toc {
+    padding: 48px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .toc h2 {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 24px;
+    font-weight: normal;
+  }
+  .toc ul {
+    list-style: none;
+    text-align: center;
+  }
+  .toc li {
+    margin-bottom: 8px;
+  }
+  .toc a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.2s;
+  }
+  .toc a:hover {
+    color: var(--text-heading);
+  }
+
+  /* Sections */
+  section {
+    padding: 56px 0 32px;
+  }
+  section + section {
+    border-top: 1px solid var(--border);
+  }
+  h2.section-title {
+    color: var(--text-heading);
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 32px;
+    letter-spacing: -0.3px;
+  }
+  p {
+    margin-bottom: 20px;
+    text-align: justify;
+    hyphens: auto;
+  }
+  p.indent {
+    text-indent: 2em;
+  }
+
+  /* Blockquotes */
+  blockquote {
+    border-left: 3px solid var(--accent-dim);
+    background: var(--quote-bg);
+    margin: 28px 0;
+    padding: 20px 24px;
+    border-radius: 0 6px 6px 0;
+  }
+  blockquote p {
+    font-style: italic;
+    color: var(--text);
+    margin-bottom: 8px;
+    text-align: left;
+    font-size: 17px;
+  }
+  blockquote p:last-child {
+    margin-bottom: 0;
+  }
+  blockquote .attrib {
+    color: var(--accent-dim);
+    font-style: normal;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+
+  /* Lists */
+  ul.content-list {
+    list-style: none;
+    margin: 20px 0 24px 0;
+    padding: 0;
+  }
+  ul.content-list li {
+    padding: 6px 0 6px 24px;
+    position: relative;
+    color: var(--text);
+  }
+  ul.content-list li::before {
+    content: '\2022';
+    color: var(--accent);
+    position: absolute;
+    left: 4px;
+    font-size: 20px;
+  }
+
+  /* Timeline */
+  .timeline-item {
+    padding: 12px 0 12px 28px;
+    position: relative;
+    border-left: 2px solid var(--border);
+    margin-left: 8px;
+    margin-bottom: 4px;
+  }
+  .timeline-item::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--accent-dim);
+    border-radius: 50%;
+    position: absolute;
+    left: -5px;
+    top: 20px;
+  }
+  .timeline-item .year {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 15px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Note */
+  .note {
+    background: var(--quote-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin: 24px 0;
+    font-size: 16px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .note strong {
+    color: var(--text);
+    font-style: normal;
+  }
+
+  /* Lethal triad */
+  .triad {
+    margin: 28px 0;
+  }
+  .triad-title {
+    text-align: center;
+    color: var(--text-heading);
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+  .triad-item {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 12px;
+  }
+  .triad-item strong {
+    color: var(--accent);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  /* Bold highlight */
+  .highlight {
+    color: var(--text-heading);
+    font-weight: 700;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 48px 0;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    body { font-size: 16px; }
+    .hero { padding: 60px 0 40px; }
+    h2.section-title { font-size: 24px; }
+    blockquote { padding: 16px 18px; margin: 20px 0; }
+    .container { padding: 0 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <p class="epigraph">&bdquo;Možná nejtoxičtější součástí našeho prostředí je způsob, jakým je společnost navržena, aby většině lidí eliminovala smysluplné volby.&ldquo;</p>
+    <p class="epigraph-author">&mdash; Dr. Raymond Peat</p>
+  </div>
+
+  <!-- TOC -->
+  <nav class="toc">
+    <h2>Obsah</h2>
+    <ul>
+      <li><a href="#pod-svetlem">Pod světlem</a></li>
+      <li><a href="#co-serotonin">Co serotonin vlastně je</a></li>
+      <li><a href="#metabolicka-brzda">Serotonin: metabolická brzda a mitochondriální toxin</a></li>
+      <li><a href="#hormony">Jak SSRIs potlačují tvé hormony</a></li>
+      <li><a href="#hypotyreoza">Chemická nerovnováha nebo hypotyreóza?</a></li>
+      <li><a href="#provize">Provize stále fungují</a></li>
+      <li><a href="#dukazy">Důkazy, které se snažili pohřbít</a></li>
+      <li><a href="#vrazdy">Vraždy spojené se SSRI</a></li>
+      <li><a href="#park">Park</a></li>
+    </ul>
+  </nav>
+
+  <!-- Pod světlem -->
+  <section id="pod-svetlem">
+    <h2 class="section-title">Pod světlem</h2>
+
+    <p class="indent">Policista vidí opilého muže, jak leze po rukou a kolenou pod jasnou pouliční lampou. Přistoupí k&nbsp;němu a&nbsp;ptá se: &bdquo;Co hledáte?&ldquo; &bdquo;Ztratil jsem klíče,&ldquo; zamumlá muž zjevně zoufalý. Policista, který chce pomoct, si klekne a&nbsp;začne hledat taky.</p>
+
+    <p class="indent">Po deseti minutách prohledávání každého centimetru chodníku pod lampou nic nenajdou. Policista se zeptá: &bdquo;Jste si jistý, že jste je ztratil právě tady?&ldquo; Muž zvedne hlavu a&nbsp;ukáže do temného, stinného parku přes ulici: &bdquo;Ne, ztratil jsem je tam v&nbsp;parku.&ldquo; Policista na něj zaraženě zírá: &bdquo;Tak proč je sakra hledáte tady?&ldquo; Muž odpoví s&nbsp;naprostou upřímností: &bdquo;Protože tady je světlo.&ldquo;</p>
+
+    <p class="indent">Toto podobenství dokonale vystihuje institucionální setrvačnost moderní psychiatrie. Klíče představují skutečné metabolické, hormonální a&nbsp;environmentální kořeny deprese, zatímco pouliční lampa představuje úzký, průmyslem financovaný pohled na serotonin. Odpovědi jsme nenašli, protože nehledáme tam, kde se klíče ztratily &ndash; hledáme tam, kde je světlo (a peníze).</p>
+
+    <p class="indent">Celá teze, že SSRIs jsou funkční léčbou klinické deprese, stojí na masové halucinaci. Rostoucí důkazy a&nbsp;výzkumy nahromaděné za poslední půlstoletí jasně ukazují čtyři body:</p>
+
+    <ul class="content-list">
+      <li>Deprese není nedostatek serotoninu.</li>
+      <li>Deprese je metabolické onemocnění.</li>
+      <li>Serotonin je metabolická brzda.</li>
+      <li>SSRIs jsou mitochondriální toxiny pro celé tělo.</li>
+    </ul>
+
+    <div class="note">
+      <strong>Poznámka:</strong> V&nbsp;celém tomto článku se &bdquo;SSRIs&ldquo; používá jako zkratka pro širší třídu serotonergních antidepresiv &ndash; včetně SSRI, SNRI a&nbsp;souvisejících léků, které zvyšují extracelulární serotonin. Neserotonergní antidepresiva jako bupropion (Wellbutrin) fungují na jiných mechanismech a&nbsp;nejsou předmětem této kritiky.
+    </div>
+
+    <p class="indent">Problém řešíme špatně. A&nbsp;přišli jsme s&nbsp;hrubými &bdquo;řešeními&ldquo;, která nejenže nepomáhají, ale často věci zhoršují. Někdy mnohem víc.</p>
+
+    <p class="indent">Rozdíl mezi klinickou praxí a&nbsp;osobní volbou je ohromující. Výzkum naznačuje, že psychiatři mnohem častěji doporučují antidepresiva pacientům, než by si je sami vybrali. Přestože uvnitř panuje skepticism, průmysl dál roste: Podle Strategic Market Research dosáhly globální prodeje antidepresiv v&nbsp;roce 2024 přibližně 19,7 miliardy dolarů, s&nbsp;předpokládaným růstem na 28,4 miliardy do roku 2030. Ve stejném roce měl americký trh s&nbsp;antidepresivy hodnotu 6,8 miliardy dolarů.</p>
+
+    <p class="indent">11,4 % dospělých v&nbsp;USA užilo v&nbsp;posledních 12 měsících předepsaný lék na depresi. Přibližně 20&ndash;25 milionů dospělých užívá SSRIs. Národní prevalence u&nbsp;dětí a&nbsp;dospívajících v&nbsp;roce 2023 stoupla na 3,6 % oproti 1,5 % v&nbsp;roce 2006, což představuje 2&ndash;3 miliony dětí po celé zemi. V&nbsp;USA se SSRIs staly standardní součástí veterinární behaviorální medicíny. Miliony psů, koček, ptáků a&nbsp;koní v&nbsp;USA dostávají SSRIs jako fluoxetin (Prozac), sertralin (Zoloft), paroxetin (Paxil) a&nbsp;citalopram (Celexa).</p>
+
+    <p class="indent">Člověk by čekal, že průmysl s&nbsp;rekordními příjmy přinese odpovídající pokles nemoci, kterou léčí. Místo toho vidíme temnou symetrii: zatímco trh se SSRIs stoupá stále výš, deprese u&nbsp;dospělých v&nbsp;USA dosáhla historického maxima. Od roku 2019 stoupla míra aktivní deprese z&nbsp;12,5 % na více než 18 %, přičemž téměř třetina všech dospělých má celoživotní diagnózu. U&nbsp;věkové skupiny 18&ndash;29 let se míra za méně než deset let více než zdvojnásobila.</p>
+
+    <p class="indent">Všechno by to bylo omluvitelné, kdyby ty léky byly aspoň bezpečné. Nejsou. Post-SSRI sexuální dysfunkce (PSSD) &ndash; necitlivost genitálií, absence libida, emoční otupění &ndash; může přetrvávat roky nebo zůstat trvalá i&nbsp;po vysazení; EMA ji oficiálně uznala v&nbsp;roce 2019.</p>
+
+    <p class="indent">Syndrom z&nbsp;vysazení je přitom systematicky bagatelizován. Průmysl desítky let používal termín &bdquo;syndrom z&nbsp;vysazení&ldquo; právě proto, aby se vyhnul slovu &bdquo;abstinenční syndrom&ldquo;, protože to naznačuje závislost. Snižování dávky musí probíhat hyperbolicky po měsíce &ndash; někdy roky &ndash; a&nbsp;téměř nikdy se tak neděje. Pacienti, kteří přestanou příliš rychle, zažívají mozkové záblesky, akatizii, depersonalizaci, rebound paniku, nově vzniklou sebevražednost a&nbsp;kognitivní poruchy &ndash; symptomy, které se rutinně chybně diagnostikují jako relaps, čímž vzniká sebe-posilující past na předepisování.</p>
+
+    <p class="indent">Když se multi-miliardový průmysl dopustí katastrofální chyby, málokdy zvolí cestu upřímnosti a&nbsp;sebezničení. Místo toho volí nekonečnou, výnosnou práci s&nbsp;hašením malých ohňů. Chyby tohoto rozsahu se nekorigují &ndash; jen se řídí.</p>
+  </section>
+
+  <!-- Co serotonin vlastně je -->
+  <section id="co-serotonin">
+    <h2 class="section-title">Co serotonin vlastně je</h2>
+
+    <p class="indent">Díky desetiletím neúnavného marketingu se průměrný člověk naučil myslet na serotonin jako na &bdquo;štěstí chemii&ldquo;. Není to tak.</p>
+
+    <p class="indent">Serotonin &ndash; 5-hydroxytryptamin (5-HT) &ndash; byl poprvé identifikován v&nbsp;roce 1935 jako &bdquo;enteramin&ldquo;, pojmenovaný podle střeva (&bdquo;entero&ldquo;), kde byl objeven. V&nbsp;roce 1948 byl přejmenován na &bdquo;serotonin&ldquo;: &bdquo;sero&ldquo; pro sérum, &bdquo;tonin&ldquo; pro jeho tonizující účinek na cévy. Jeho nejstarší známé funkce byly srážení krve a&nbsp;vazokonstrikce. S&nbsp;náladou to nemělo nic společného.</p>
+
+    <p class="indent">Až v&nbsp;roce 1953 Betty Mack Twarog dokázala, že serotonin vůbec existuje v&nbsp;mozku. Předtím se předpokládalo, že je to periferní hormon, který nemůže překročit hematoencefalickou bariéru. A&nbsp;v&nbsp;jistém smyslu to ani nemůže: 95 % serotoninu v&nbsp;těle sídlí ve střevech. Mozek si musí vyrábět vlastní ze tryptofanu, který se přepravuje přes hematoencefalickou bariéru.</p>
+
+    <p class="indent">V&nbsp;těle serotonin reguluje motilitu střev, cévní tonus, srážení krevních destiček, energetický metabolismus, ukládání lipidů, obrat kostí a&nbsp;remodelaci tkání. V&nbsp;mozku nefunguje jako signál radosti, ale jako kontextově závislý neuromodulátor řídící reakci na stres, behaviorální inhibici, vzrušení a&nbsp;alokaci energie.</p>
+
+    <p class="indent">Mozek si serotonin vytváří ve dvou krocích: tryptofan-hydroxyláza (vyžaduje železo a&nbsp;BH4) přemění tryptofan na 5-HTP a&nbsp;aromatická L-amino-kyselina-dekarboxyláza (vyžaduje vitamin B6) přemění 5-HTP na 5-HT (serotonin). Zásoba mozku závisí výhradně na tryptofanu, který překoná hematoencefalickou bariéru &ndash; kde soutěží o&nbsp;transport s&nbsp;několika dalšími velkými neutrálními aminokyselinami (LNAAs). Serotonin sám přes bariéru projít nemůže.</p>
+
+    <p class="indent">Jeho prekurzor 5-HTP však ano. To vyvolává jasnou otázku: pokud 5-HTP překonává bariéru a&nbsp;přímo zvyšuje serotonin v&nbsp;mozku a&nbsp;pokud by hypotéza o&nbsp;serotoninu byla správná, měl by 5-HTP fungovat stejně dobře jako SSRI. Několik malých studií hlásilo antidepresivní účinky srovnatelné s&nbsp;SSRI, i&nbsp;když žádná nesplňovala moderní standardy přísnosti (Turner et al., 2006).</p>
+
+    <p class="indent">Komplikace: většina orálního 5-HTP se ve střevech dekarboxyluje na serotonin ještě před dosažením mozku &ndash; problém řešitelný periferními dekarboxylázovými inhibitory jako karbidopa, ale komerční doplňky ho úplně ignorují. Důkazy jsou omezené, ale otázka, kterou vyvolává, je jasná: proč vyrábět inhibitor zpětného vychytávání, když by šlo zdokonalit strategii s&nbsp;prekurzorem? Jak uvidíme, existují ještě lepší řešení.</p>
+  </section>
+
+  <!-- Serotonin: metabolická brzda -->
+  <section id="metabolicka-brzda">
+    <h2 class="section-title">Serotonin: metabolická brzda a&nbsp;mitochondriální toxin</h2>
+
+    <p class="indent">Hibernující sysli mají nejvyšší hladiny serotoninu v&nbsp;mozku právě při vstupu do torporu &ndash; fáze, kdy se metabolismus musí zpomalit a&nbsp;energie se musí šetřit, aby přežili zimu. Když se zvíře probudí, serotonin klesá a&nbsp;jeho metabolit 5-HIAA stoupá, což signalizuje návrat k&nbsp;normální metabolické aktivitě. To není náhoda.</p>
+
+    <p class="indent">Základní biologická role serotoninu je metabolická: působí jako brzda na oxidativní fosforylaci &ndash; cestu zodpovědnou za zhruba 90 % buněčné produkce ATP. Mozek spaluje 20 % celkové energie těla při pouhých 2 % jeho hmotnosti. To ho činí mimořádně citlivým na cokoli, co dusí produkci energie. A&nbsp;serotonin je zvýšený přesně v&nbsp;stavech, které byste u&nbsp;metabolické brzdy očekávali:</p>
+
+    <ul class="content-list">
+      <li>Zánět</li>
+      <li>Endotoxémie</li>
+      <li>Hypoxie</li>
+      <li>Chronický stres</li>
+      <li>Narušená produkce energie</li>
+    </ul>
+
+    <p class="indent">Krátkodobě je to adaptivní &ndash; serotonin zvyšuje motilitu střev, aby vyhnal dráždidla, podporuje srážení destiček a&nbsp;pomáhá přesouvat zdroje při poranění nebo infekci. Ale když serotonin zůstává chronicky zvýšený, zejména extracelulárně, stává se stejný signál maladaptivním.</p>
+
+    <p class="indent">Toto rámování není jen teoretické: u&nbsp;myší inhibice syntézy periferního serotoninu zvyšuje termogenezi a&nbsp;snižuje obezitu; u&nbsp;lidí je periferní serotonin spojován se zvýšenou absorpcí a&nbsp;ukládáním energie.</p>
+
+    <p class="indent">Karcinoidní syndrom nabízí přirozený experiment, co chronický přebytek serotoninu dělá s&nbsp;tělem. Nádory vylučující serotonin způsobují fibrózu srdečních chlopní, návaly a&nbsp;průjem &ndash; mezi dalšími systémovými účinky. Mechanismus je přímý: chronicky zvýšený serotonin aktivuje receptory 5-HT2B na fibroblastech, podporuje ukládání kolagenu a&nbsp;fibrózu tkání. Dlouhodobá aktivace 5-HT2B také narušuje glukózou stimulovanou sekreci inzulínu a&nbsp;snižuje mitochondriální aktivitu v&nbsp;beta-buňkách slinivky.</p>
+
+    <p class="indent">Uvnitř buněk je serotonin prekurzorem melatoninu &ndash; jednoho z&nbsp;endogenních ochránců mitochondrií těla. Přeměna závisí na aralkylamin-N-acetyltransferáze (AANAT), rychlost určujícím enzymu syntézy melatoninu. Fluoxetin &ndash; nejstudovanější SSRI &ndash; byl prokázán, že snižuje noční sekreci melatoninu u&nbsp;lidí a&nbsp;potlačuje expresi AANAT u&nbsp;zvířecích modelů.</p>
+
+    <p class="indent">Při vyšších koncentracích serotonin sám v&nbsp;buněčných a&nbsp;zvířecích modelech přímo narušuje mitochondriální respiraci, snižuje výstup ATP a&nbsp;narušuje energetický metabolismus. Celkově extracelulární zvýšený serotonin působí jako metabolický toxin několika konvergujícími mechanismy:</p>
+
+    <ul class="content-list">
+      <li>Potlačení mitochondriální produkce a&nbsp;signálů biogeneze</li>
+      <li>Zvýšení oxidativního a&nbsp;vápníkového stresu, který poškozuje stávající mitochondriální aparát</li>
+      <li>Přímá tvorba H₂O₂ přes metabolismus serotoninu MAO-A &ndash; více obratu znamená více oxidativního poškození právě těch mitochondrií, které produkují energii buňky</li>
+    </ul>
+
+    <p class="indent">Tyto účinky se zdají nejsilnější ve střevech, játrech, srdci a&nbsp;beta-buňkách slinivky &ndash; ale základní cesty (serotoninové receptory, metabolismus MAO-A, ROS signalizace a&nbsp;manipulace s&nbsp;Ca²⁺) fungují napříč mnoha tkáněmi, včetně mozku. Není překvapením, že SSRIs &ndash; zejména fluoxetin &ndash; byly v&nbsp;buněčných a&nbsp;zvířecích modelech prokázány jako látky, které přímo narušují produkci ATP a&nbsp;mitochondriální aktivitu v&nbsp;mozkové tkáni.</p>
+
+    <p class="indent">Mezitím přímé experimentální důkazy komplikují příběh o&nbsp;nízkém serotoninu z&nbsp;opačné strany. Vyčerpání serotoninu nespolehlivě vyvolává depresivní symptomy u&nbsp;zdravých dobrovolníků. A&nbsp;akutní léčba SSRI často symptomy v&nbsp;prvních týdnech zhoršuje &ndash; přesně to, co byste očekávali, pokud lék potlačuje již oslabený energetický systém před jakoukoli adaptací.</p>
+
+    <p class="indent">Rostoucí množství důkazů ukazuje na poruchu energie jako na zásadnější problém: Studie v&nbsp;Journal of Neuroscience zjistila, že narušená energetická signalizace v&nbsp;klíčové mozkové oblasti (dorzální hipokampus) hraje kauzální roli v&nbsp;depresivním a&nbsp;úzkostném chování u&nbsp;stresovaných myší. Meta-analýza FDG-PET z&nbsp;roku 2014 našla významný hypometabolismus glukózy v&nbsp;bilaterálním insula a&nbsp;cingulárním gyru u&nbsp;depresivních jedinců &ndash; konzistentní s&nbsp;&bdquo;výpadkem proudu&ldquo; v&nbsp;klíčových emočních a&nbsp;motivačních okruzích. Krysí modely ukazují, že serotonin sám může snižovat hladiny ATP v&nbsp;mozku.</p>
+
+    <p class="indent">Zvýšený serotonin je downstream marker metabolického stresu &ndash; ne kořenová příčina deprese. Chronické zvyšování extracelulárního serotoninu může u&nbsp;některých případů symptomy zmírnit, ale neřeší &ndash; a&nbsp;může zhoršovat &ndash; základní problémy narušené produkce energie, mitochondriální dysfunkce, zánětu a&nbsp;systémové stresové signalizace.</p>
+
+    <p class="indent"><strong>Pokud je deprese poruchou narušeného energetického metabolismu, pak model léčby postavený na zvyšování extracelulárního serotoninu není jen neúplný &ndash; míří úplně špatným směrem.</strong></p>
+  </section>
+
+  <!-- Jak SSRIs potlačují tvé hormony -->
+  <section id="hormony">
+    <h2 class="section-title">Jak SSRIs potlačují tvé hormony</h2>
+
+    <p class="indent">Serotonin je jeden z&nbsp;nejsilnějších přirozených stimulátorů uvolňování prolaktinu z&nbsp;hypofýzy a&nbsp;právě proto může být sérový prolaktin dobrým náhradním markerem zvýšeného serotoninu. Blokováním zpětného vychytávání serotoninu mohou SSRIs zvyšovat cirkulující hladiny prolaktinu (hyperprolaktinemie) u&nbsp;mírného procenta uživatelů.</p>
+
+    <p class="indent">Zvýšený prolaktin potlačuje sekreci hypothalamického gonadotropin-uvolňujícího hormonu (GnRH), což následně snižuje výstup hypofyzárního luteinizačního hormonu (LH) a&nbsp;folikulostimulačního hormonu (FSH). Konečným výsledkem u&nbsp;mužů je snížená testikulární produkce testosteronu &ndash; forma sekundárního (hypogonadotropního) hypogonadismu.</p>
+
+    <p class="indent">Klinická data potvrzují celou kaskádu: muži na SSRIs mají významně vyšší prolaktin spolu s&nbsp;nižším LH, FSH a&nbsp;celkovým testosteronem oproti kontrolám. Některé SSRIs také přímo narušují steroidogenezi Leydigových buněk ve varlatech a&nbsp;posouvají rovnováhu směrem k&nbsp;vyšší produkci estrogenu. Další buněčné modely ukázaly, že SSRIs mají stimulační účinky na aromatázu, čímž zvyšují poměr estrogen/androgen.</p>
+
+    <p class="indent">U&nbsp;žen je serotoninová stimulace přední hypofýzy a&nbsp;zvyšování cirkulujících hladin prolaktinu často výraznější než u&nbsp;mužů díky estrogenovému senzibilizujícímu účinku na laktotrofní buňky. Opět platí: zvýšený prolaktin potlačuje hypothalamickou sekreci GnRH, což následně snižuje hypofyzární výstup LH a&nbsp;FSH. U&nbsp;žen to narušuje hypothalamicko-hypofyzárně-ovariální (HPO) osu, což vede k&nbsp;narušenému folikulárnímu vývoji, snížené ovulaci, nižší produkci estradiolu a&nbsp;progesteronu a&nbsp;široké škále menstruačních nepravidelností (amenorea, oligomenorea, prodloužené cykly, silné krvácení nebo intermenstruační špinění).</p>
+
+    <p class="indent">Klinické studie hlásí menstruační poruchy u&nbsp;24,6 % žen na SSRIs &ndash; zhruba dvojnásobek oproti neuživatelkám. Některé SSRIs (zejména fluoxetin, sertralin a&nbsp;paroxetin) také přímo modulují syntézu a&nbsp;signalizaci estrogenu, někdy zvyšují cirkulující estradiol, ale přesto narušují normální cyklické vzorce.</p>
+
+    <p class="indent">Hormonální narušení z&nbsp;těchto léků vysvětluje široce hlášenou ztrátu vitality u&nbsp;uživatelů, vedoucí ke snížené plodnosti, ztrátě svalové hmoty a&nbsp;erektilní dysfunkci u&nbsp;mužů a&nbsp;k&nbsp;menstruačním problémům, anorgasmii a&nbsp;obavám o&nbsp;hustotu kostí u&nbsp;žen. To je způsobeno lékem vyvolaným &bdquo;flatlinem&ldquo; přirozeného steroidního rytmu.</p>
+
+    <p class="indent">Zatímco se to často označuje jako &bdquo;reziduální deprese&ldquo;, krutá ironie je, že tyto symptomy pocházejí z&nbsp;potlačeného endokrinního systému. <strong>Jinými slovy: tyto léky vytvářejí a&nbsp;zhoršují podmínky, kvůli kterým je lidé začali brát.</strong></p>
+  </section>
+
+  <!-- Chemická nerovnováha nebo hypotyreóza? -->
+  <section id="hypotyreoza">
+    <h2 class="section-title">Chemická nerovnováha nebo hypotyreóza?</h2>
+
+    <p class="indent">Když se podíváme do literatury o&nbsp;serotonergních antidepresivech, stane se něco šokujícího jasným: neexistuje žádný mechanismus, jakým by zvýšený serotonin zmírňoval depresi &ndash; jen kruhové odvolávání se na empirické asociace, všechny zahrnující manipulaci s&nbsp;špatně pochopenými serotoninovými receptory a&nbsp;zřídka zmiňovanými zpětnými smyčkami. Při hlubším kopání je zřejmé, že experti souhlasí:</p>
+
+    <blockquote>
+      <p>&bdquo;Ve skutečnosti byl koncept ‚chemické nerovnováhy' vždy jen městskou legendou &ndash; nikdy to nebyla teorie, kterou by seriózně prosazovali dobře informovaní psychiatři.&ldquo;</p>
+      <div class="attrib">&mdash; Dr. Ronald Pies, emeritní šéfredaktor Psychiatric Times</div>
+    </blockquote>
+
+    <blockquote>
+      <p>&bdquo;Neexistuje ani špetka přímého důkazu, že chemická nerovnováha je kořenem jakékoli duševní poruchy.&ldquo;</p>
+      <div class="attrib">&mdash; Dr. Steven Hyman, bývalý ředitel amerického Národního institutu duševního zdraví (NIMH)</div>
+    </blockquote>
+
+    <blockquote>
+      <p>&bdquo;Teorie serotoninu je tak blízko k&nbsp;tomu, aby byla v&nbsp;historii vědy definitivně vyvrácena, jak jen teorie může být...&ldquo;</p>
+      <div class="attrib">&mdash; Dr. Irving Kirsch, zástupce ředitele Programu studií placeba, Harvard Medical School</div>
+    </blockquote>
+
+    <p class="indent">Teorie &bdquo;chemické nerovnováhy&ldquo; deprese nikdy nebyla biologicky validována. Ve skutečnosti landmarkový přehledový článek z&nbsp;roku 2022 o&nbsp;17 předchozích studiích (12 systematických přehledů/meta-analýz a&nbsp;několik velkých genetických analýz) vedený Joannou Moncrieffovou nenašel žádnou konzistentní souvislost mezi nízkými hladinami serotoninu a&nbsp;depresí napříč desítkami tisíc účastníků.</p>
+
+    <p class="indent">Meta-analýzy ukazují, že podstatná část benefitu SSRI &ndash; zejména u&nbsp;mírné až střední deprese &ndash; je připisována placebo efektu, zatímco nefarmakologické intervence jako cvičení prokazují srovnatelnou nebo větší účinnost &ndash; chůze, silový trénink a&nbsp;jóga produkují velikosti efektu, které splňují nebo překonávají ty hlášené pro SSRI ve velkých meta-analýzách.</p>
+
+    <p class="indent">Takže pokud depresi neřídí nedostatek serotoninu, co tedy?</p>
+
+    <p class="indent">V&nbsp;DSM-5 je klinický lékař technicky povinen vyloučit &bdquo;fyziologické účinky jiného zdravotního stavu&ldquo; (jako hypotyreóza) před diagnózou deprese. Avšak při standardním 15minutovém psychiatrickém vyšetření, jak často se ve skutečnosti provede kompletní štítná panel (TSH, volný T3, volný T4, protilátky) &ndash; a&nbsp;co je důležitější, jak často se &bdquo;subklinický&ldquo; štítný problém ignoruje, protože spadá do širokého &bdquo;normálního&ldquo; rozmezí laboratoří?</p>
+
+    <p class="indent">Suplementace štítného hormonu prospívá léčbě rezistentní depresi a&nbsp;jedna kohortová studie dokonce našla nízké T3 u&nbsp;více než 90 % středně těžkých až těžkých případů. Diagnostické selhání je zřejmé, když překryjete diagnostické symptomy deprese s&nbsp;fyziologickými symptomy hypotyreózy. Nejsou jen podobné; často jsou identickými projevy těla, které se snaží přežít na nízkém energetickém rozpočtu.</p>
+
+    <p class="indent">Deprese má mnoho konvergujících příčin (např. oxidativní stres, nízká energie mozku, dysregulace štítného hormonu, dysregulace pohlavních hormonů, zánět, aktivace HPA osy, snížená dopaminová aktivita, deficit neurosteroidů, nerovnováha excitační/inhibiční, střevní dysbióza, environmentální stresory). Metabolismus však stojí za každým tělesným procesem, a&nbsp;proto je klíčová správná funkce štítné žlázy.</p>
+
+    <p class="indent">&bdquo;Ale můj doktor řekl, že moje štítná žláza je v&nbsp;pořádku.&ldquo; Jsem si jistý, že tohle jste slyšeli. Tady je důvod, proč to tak nemusí být:</p>
+
+    <p class="indent">Navzdory zhoršujícímu se celkovému zdraví a&nbsp;navzdory klesajícím bazálním metabolickým rychlostem a&nbsp;průměrným tělesným teplotám &ndash; které podle Speakmana et al. (2023) nejsou způsobeny sníženou aktivitou &ndash; diagnostická prevalence hypotyreózy paradoxně klesla. Historické odhady pomocí screeningu bazální teploty naznačovaly míry až 40 % ve 40. a&nbsp;50. letech. Dnes, při užších kritériích založených na TSH, se číslo pohybuje kolem 5 %. Zda to odráží skutečné zlepšení, nebo zúžení diagnostiky, je otázka, na kterou průmysl nemá motivaci se ptát.</p>
+
+    <p class="indent">Část posunu sahá k&nbsp;testu proteinově vázaného jodu (PBI) &ndash; hrubému testu, který měřil veškerý jód vázaný na sérové proteiny, nejen štítné hormony. Když byl v&nbsp;60. letech opuštěn, užší diagnostická čočka, kterou zavedl, přetrvala. Následné referenční rozsahy byly postaveny na populačních datech, která zahrnovala jedince se subklinickou štítnou chorobou, což uměle rozšířilo, co se kvalifikuje jako &bdquo;normální&ldquo;, a&nbsp;předefinovalo miliony symptomatických pacientů jako zdravé.</p>
+
+    <p class="indent">To se shodovalo s&nbsp;propagací farmaceutického průmyslu levothyroxinu (monoterapie T4) oproti starším vysušeným štítným přípravkům obsahujícím T3 i&nbsp;T4. Jak poznamenává Dr. Raymond Peat, pokud by se tak široká &bdquo;normální&ldquo; rozmezí aplikovala na jiné biomarkery, jasně rizikové hladiny by byly považovány za klinicky přijatelné.</p>
+
+    <p class="indent">A&nbsp;krevní testy mají inherentní omezení: měří, co plave v&nbsp;séru, ne co se děje uvnitř buňky. Pacient může mít &bdquo;normální&ldquo; štítné hladiny v&nbsp;krvi, zatímco jeho tkáně zůstávají funkčně vyhladovělé. Pokud symptomy říkají hypotyreóza, číslo na laboratorní zprávě by nemělo převážit.</p>
+
+    <p class="indent">Otázka je, proč toto diagnostické selhání přetrvává desítky let. Odpověď, jako obvykle, zahrnuje peníze.</p>
+  </section>
+
+  <!-- Provize stále fungují -->
+  <section id="provize">
+    <h2 class="section-title">Provize stále fungují</h2>
+
+    <p class="indent">Průmysl nemusí porušovat zákon. Jen předefinoval, co je legální.</p>
+
+    <p class="indent">Přímé provize za předpis starých generik jsou nelegální podle federálního Anti-Kickback Statute (AKS) 42 U.S.C. § 1320a-7b(b). Ale data z&nbsp;Open Payments ukazují, že farmaceutické firmy stále platily lékařům miliardy v&nbsp;posledních letech &ndash; za jídla, přednáškové honoráře, konzultace a&nbsp;cesty. Peníze stále tečou; změnila se jen papírování.</p>
+
+    <p class="indent">Účinek na předepisování není nepatrný. Analýza ProPublica z&nbsp;dat Open Payments a&nbsp;Medicare Part D zjistila, že lékaři, kteří dostávali platby spojené s&nbsp;konkrétním lékem, ho v&nbsp;průměru předepisovali o&nbsp;58 % více než lékaři, kteří žádné platby nedostávali. Tento vzorec platil pro 46 z&nbsp;50 zkoumaných léků.</p>
+
+    <p class="indent">Systematický přehled z&nbsp;roku 2021 od Mitchella et al. potvrdil vztah napříč 36 studiemi: 30 z&nbsp;nich našlo pozitivní asociaci v&nbsp;každé analýze, s&nbsp;důkazy o&nbsp;dávkové odpovědi i&nbsp;časových efektech &ndash; více peněz, více předpisů, a&nbsp;předpisy následují platby.</p>
+
+    <p class="indent">I&nbsp;u&nbsp;generik průmysl propaguje třídu léků skrz &bdquo;vzdělávací&ldquo; programy, klíčové opinion leadery a&nbsp;novější značkové varianty. Když blockbuster SSRI zgenericuje, výrobce neodejde &ndash; reformuluje, rebranduje nebo spustí kombinovaný produkt (vilazodon, vortioxetin, kombinace SSRI a&nbsp;atypických antipsychotik) a&nbsp;přesměruje promoční stroj.</p>
+
+    <p class="indent">Výsledkem je institucionální konsenzus, který nikdy vážně nezkoumal své vlastní základy:</p>
+
+    <p class="indent">Americká vysoká škola internistů (2023): &bdquo;Doporučuje monoterapii druhogeneračním antidepresivem jako počáteční léčbu pro dospělé s&nbsp;akutní velkou depresivní poruchou.&ldquo;</p>
+
+    <p class="indent">Americká akademie rodinných lékařů (2023): &bdquo;Druhogenerační antidepresiva jsou první volbou pro depresi.&ldquo;</p>
+
+    <p class="indent">Americká psychiatrická asociace (2010): Stále nejcitovanější směrnice, s&nbsp;následnými aktualizacemi zachovávajícími stejný farmakologický rámec, který tvrdí, že SSRIs a&nbsp;SNRIs jsou &bdquo;nejlepší první volbou pro většinu pacientů&ldquo;.</p>
+
+    <p class="indent">Tři velké organizace, jedno doporučení, žádná odchylka. Praktičtí lékaři &ndash; kteří píší zhruba 80 % všech předpisů na antidepresiva &ndash; se těmito směrnicemi řídí. Směrnice se řídí databází důkazů. A&nbsp;databáze důkazů se řídí penězi.</p>
+  </section>
+
+  <!-- Důkazy, které se snažili pohřbít -->
+  <section id="dukazy">
+    <h2 class="section-title">Důkazy, které se snažili pohřbít</h2>
+
+    <p class="indent">Následující výňatek pochází z&nbsp;interního memoranda Claudea Bouchyho, ředitele Eli Lilly Německo, adresovaného Leigh Thompsonovi, listopad 1990 (exponáty 117&ndash;118, Forsyth v. Eli Lilly):</p>
+
+    <blockquote>
+      <p>&bdquo;Hans Weber a&nbsp;já máme problémy se směry, které naše bezpečnostní oddělení dostává od korporátní skupiny (Drug Epidemiology Unit) a&nbsp;žádá nás, abychom změnili identifikaci událostí, jak je hlásí lékaři. U&nbsp;tohoto případu je naše bezpečnostní oddělení požádáno, aby změnilo termín události ‚pokus o&nbsp;sebevraždu' (jak hlásil lékař) na ‚předávkování'! U&nbsp;tohoto případu je požadováno, abychom změnili ‚sebevražedné myšlenky' na ‚deprese'. Nemyslím si, že bych dokázal vysvětlit BGA [německému regulátorovi], soudci, novináři nebo dokonce své rodině, proč bychom to dělali, zvláště u&nbsp;citlivé otázky sebevraždy a&nbsp;sebevražedných myšlenek.&ldquo;</p>
+    </blockquote>
+
+    <p class="indent">O&nbsp;několik let později Dr. Kapit &ndash; původní FDA recenzent pro fluoxetin &ndash; řekl British Medical Journal:</p>
+
+    <blockquote>
+      <p>&bdquo;Pokud máme dobré důkazy, že jsme byli uvedeni v&nbsp;omyl a&nbsp;data byla zatajena, změnil bych svůj názor [na bezpečnost fluoxetinu]. Nyní souhlasím, že tyto stimulační vedlejší účinky, zejména ohledně sebevražedných a&nbsp;vražedných myšlenek, jsou horší, než jsem si myslel v&nbsp;době, kdy jsem lék recenzoval.&ldquo;</p>
+    </blockquote>
+
+    <p class="indent">David Graham, zástupce ředitele v&nbsp;FDA Office of Drug Safety, kritizoval post-marketingová data Eli Lilly pro fluoxetin. Grahamovo memorandum z&nbsp;roku 1990 dospělo k&nbsp;závěru, že kvůli selhání Lilly systematicky hodnotit násilí a&nbsp;vyloučení 76 z&nbsp;97 hlášených případů suicidality &bdquo;zjevně velké podhlášení&ldquo; znamená, že analýza nemohla prokázat, že fluoxetin a&nbsp;násilné chování nejsou související.</p>
+
+    <p class="indent">Obavy z&nbsp;suicidality nebyly omezeny jen na interní korespondenci nebo regulatorní zpětný pohled. Psychiatr Dr. David Healy &ndash; autorita na serotoninovou farmakologii a&nbsp;bývalý ředitel North Wales Department of Psychological Medicine na University of Wales &ndash; odhadl v&nbsp;roce 2000, že 50 000 nadměrných sebevražd může být připsáno Prozacu od jeho uvedení, nad základní riziko v&nbsp;neléčených populacích.</p>
+
+    <p class="indent">V&nbsp;roce 2005 hodnocení Prozacu v&nbsp;Nizozemsku Medicines Evaluations Board jasně doporučilo, aby Evropská léková agentura (evropský ekvivalent FDA) neschválila Prozac jako léčbu deprese u&nbsp;dětí mladších 18 let, protože poměr benefitu a&nbsp;rizika byl negativní. Toto doporučení bylo ignorováno.</p>
+
+    <p class="indent">Průměrný pacient odcházející z&nbsp;ordinace s&nbsp;předpisem na Prozac pravděpodobně o&nbsp;ničem z&nbsp;toho neslyšel. To se musí změnit.</p>
+  </section>
+
+  <!-- Vraždy spojené se SSRI -->
+  <section id="vrazdy">
+    <h2 class="section-title">Vraždy spojené se SSRI</h2>
+
+    <p class="indent">V&nbsp;roce 2000 Dr. David Healy publikoval crossover studii, ve které dal sertralin (Zoloft) a&nbsp;reboxetin 20 zdravým dobrovolníkům. Dva z&nbsp;nich &ndash; oba na Zoloftu &ndash; se stali sebevražednými. Jeden se posedle zabýval myšlenkou hodit se pod auto nebo vlak, zatímco druhý fantazíroval o&nbsp;oběšení se na trámě v&nbsp;ložnici.</p>
+
+    <blockquote>
+      <p>&bdquo;Dokážeme udělat zdravé dobrovolníky agresivní, ustrašené, sebevražedné a&nbsp;dokonce nebezpečné pro ostatní.&ldquo;</p>
+      <div class="attrib">&mdash; Dr. David Healy, Primary Care Psychiatry, 2000</div>
+    </blockquote>
+
+    <p class="indent">Nebaví je přemýšlet o&nbsp;něčem, čeho by se normálně děsili. Tohle není léčení deprese &ndash; je to vyvolání chemického stavu.</p>
+
+    <p class="indent">10. února 2026 osmnáctiletý Jesse Van Rootselaar zabil svou 39letou matku a&nbsp;11letého nevlastního bratra doma a&nbsp;poté zahájil střelbu na střední škole Tumbler Ridge Secondary School, zabil šest lidí a&nbsp;zranil 27.</p>
+
+    <p class="indent">Když nezávislí novináři objevili Jesseho účet na Redditu, zjistili, že Jesse byl na a&nbsp;off více nelegálních látkách ovlivňujících náladu a&nbsp;předepsaných psychotropních léků. V&nbsp;jednom příspěvku popsal, že byl na 280 mg Zoloftu. Maximální doporučená dávka Zoloftu je 200 mg (FDA, EMA, Health Canada), přesto &bdquo;specialisté&ldquo; rutinně předepisují až 400 mg. To je skok do tmy; tito praktici nemohou testovat skutečný stav neurotransmiterů, ani ho přibližně odhadnout přes periferní metabolity. Otáčejí knoflíkem na vysokonapěťovém systému bez voltmetru.</p>
+
+    <p class="indent">Jesseho případ je sice tragický, ale není nový. Vzorec sahá desítky let zpátky:</p>
+
+    <div class="timeline-item"><span class="year">1993</span> William Forsyth z&nbsp;Havaje smrtelně pobodal svou ženu 15krát a&nbsp;pak se zabil, dva týdny po zahájení Prozacu.</div>
+    <div class="timeline-item"><span class="year">1996</span> Kurt Danysh zastřelil svého otce v&nbsp;Pensylvánii. Tvrdil, že zatímco bral Prozac, cítil, jako by se na sebe díval &bdquo;shora&ldquo;.</div>
+    <div class="timeline-item"><span class="year">1998</span> Donald Schell, 60letý muž bez historie násilí, zavraždil svou ženu, dceru a&nbsp;vnučku a&nbsp;pak se zabil, několik týdnů po předepsání Paxilu. Jeho pozůstalí úspěšně zažalovali GlaxoSmithKline (GSK), výrobce Paxilu, a&nbsp;porota ve Wyomingu shledala GSK 80% zodpovědnou a&nbsp;přiřkla rodině 6,4 milionu dolarů.</div>
+    <div class="timeline-item"><span class="year">1999</span> David Hawkins, 74letý, uškrtil svou ženu po 50 letech manželství. Dostal jen tři roky za vraždu, protože soudce usoudil, že by se to nestalo, kdyby nebyl na Zoloftu.</div>
+    <div class="timeline-item"><span class="year">1999</span> Eric Harris a&nbsp;Dylan Klebold zastřelili 13 lidí a&nbsp;zranili 21 dalších při masové střelbě na střední škole Columbine. Harris, tehdy 18letý, bral Zoloft, ale před vraždami přešel na Luvox.</div>
+    <div class="timeline-item"><span class="year">2001</span> Christopher Pittman, 12letý, zastřelil své spící prarodiče a&nbsp;pak zapálil jejich dům v&nbsp;Chesteru v&nbsp;Jižní Karolíně. Byl předepsán Zoloft méně než měsíc předtím.</div>
+    <div class="timeline-item"><span class="year">2004</span> David Carmichael z&nbsp;Ontaria v&nbsp;Kanadě omámil a&nbsp;uškrtil svého 11letého syna. Po zabití seděl v&nbsp;transu a&nbsp;díval se na televizi, než zavolal policii. Byl shledán trestně neodpovědným kvůli psychóze vyvolané Zoloftem; lék mu byl předepsán jen několik týdnů předtím a&nbsp;soudce připsal &bdquo;psychotický záchvat&ldquo; lékům.</div>
+    <div class="timeline-item"><span class="year">2009</span> Shane Clancy, 22letý student teologie popisovaný jako &bdquo;společenský abstinent, jehož život se točil kolem rodiny, studia a&nbsp;charity&ldquo;, pobodal k&nbsp;smrti nového přítele své bývalé. Clancy také pobodal mužova bratra devětkrát a&nbsp;svou bývalou, oba přežili. Poté se sám smrtelně pobodal 19krát. Začal brát Celexu jen tři týdny předtím.</div>
+    <div class="timeline-item"><span class="year">2010</span> Neal Jacobson, floridský rodinný muž bez historie násilí, zastřelil svou ženu a&nbsp;dvojčata tři týdny po předepsání Zoloftu a&nbsp;Xanaxu.</div>
+    <div class="timeline-item"><span class="year">2012</span> James Holmes zastřelil 12 lidí a&nbsp;zranil 70 dalších při premiéře filmu Temný rytíř povstal v&nbsp;Aurorě v&nbsp;Coloradu. Jeho psychiatrička Lynne Fenton mu předepsala sertralin dříve ten rok a&nbsp;během týdne zdvojnásobila dávku z&nbsp;50 mg na 100 mg. Jeho předpis vypršel přibližně tři týdny před střelbou.</div>
+    <div class="timeline-item"><span class="year">2019</span> Alec McKinney a&nbsp;Devon Erickson zahájili střelbu na STEM School Highlands Ranch v&nbsp;Coloradu, zabili jednoho studenta a&nbsp;zranili osm dalších. Během soudního řízení svědectví odhalilo, že McKinney, tehdy 16letý, byl v&nbsp;měsících před útokem předepsán antidepresivum Zoloft.</div>
+    <div class="timeline-item"><span class="year">2023</span> Lindsay Clancyová z&nbsp;Duxbury v&nbsp;Massachusetts uškrtila své tři děti cvičební gumou a&nbsp;pak skočila z&nbsp;okna, což ji ochromilo. Ve čtyřech měsících předtím jí Dr. Jennifer A. Tufts a&nbsp;Rebecca H. Jollotta, PMHNP, předepsaly 13 různých psychiatrických léků &ndash; včetně Zoloftu, Prozacu a&nbsp;Seroquelu. Její obhajoba tvrdila nedobrovolnou intoxikaci a&nbsp;předávkování, s&nbsp;odkazem na novou nebo změněnou látku ovlivňující mysl předepisovanou v&nbsp;průměru každých 11 dní.</div>
+    <div class="timeline-item"><span class="year">2024</span> Colt Gray, 14letý, smrtelně zastřelil dva studenty a&nbsp;dva učitele a&nbsp;zranil sedm dalších na střední škole Apalachee v&nbsp;Georgii. Během procesu s&nbsp;jeho otcem v&nbsp;roce 2026 svědectví odhalilo, že teenager se před útokem sám léčil Zoloftem, který byl původně předepsán jeho matce, přičemž hlásil symptomy mánie a&nbsp;zhoršující se duševní stav.</div>
+
+    <p class="indent">Tyto incidenty jsou jen špičkou ledovce. Jsou vzácné? Jistě. Ale tyto příběhy jsou děsivé. Tohle by nemělo být riziko, které musí normální, byť náchylný člověk riskovat.</p>
+
+    <p class="indent">SSRIs přepnou spínač. Existuje smrtící kombinace vedlejších účinků, která &ndash; když se spojí s&nbsp;vhodným neurologickým profilem a/nebo životními okolnostmi &ndash; nutí lidi k&nbsp;činům násilí tak nesmyslným, tak hrůzným, že je těžké je pochopit.</p>
+
+    <div class="triad">
+      <div class="triad-title">Smrtící trojice</div>
+      <div class="triad-item">
+        <strong>Akatizie</strong>
+        Nesnesitelný vnitřní neklid tak silný, že smrt se zdá lepší než ho snášet. Od roku 1992 uznávána jako přímý mediátor SSRI vyvolané suicidality.
+      </div>
+      <div class="triad-item">
+        <strong>Emoční otupění</strong>
+        Odpojení &ndash; &bdquo;dívat se na sebe shora&ldquo;. Morální a&nbsp;empatická brzda je farmakologicky odstraněna. Důsledky přestanou působit reálně.
+      </div>
+      <div class="triad-item">
+        <strong>Dezinhibice</strong>
+        Kolaps kontroly impulzů. Brána chování, která normálně brání myšlence stát se činem, je pryč. Zůstává ne vztek, ale čin bez pocitu, násilí bez motivu.
+      </div>
+    </div>
+
+    <blockquote>
+      <p>&bdquo;Antidepresiva se serotonergními účinky byla nejsilněji a&nbsp;nejkonzistentněji implikována v&nbsp;hlášeních o&nbsp;násilných činech vůči ostatním... Tyto činy zahrnovaly vraždu, fyzické napadení a&nbsp;fyzické zneužívání.&ldquo;</p>
+      <div class="attrib">&mdash; Thomas J. Moore, senior vědec v&nbsp;Institute for Safe Medication Practices (ISMP)</div>
+    </blockquote>
+  </section>
+
+  <!-- Park -->
+  <section id="park">
+    <h2 class="section-title">Park</h2>
+
+    <p class="indent">Teorie deprese z&nbsp;nedostatku serotoninu nikdy nebyla prokázána. Byla předpokládána, marketingována a&nbsp;hájena &ndash; ne proto, že by ji důkazy podporovaly, ale protože to vyžadovaly příjmy.</p>
+
+    <p class="indent">Důkazy, které máme, ukazují úplně jiným směrem. Deprese sleduje narušený energetický metabolismus, štítnou dysfunkci, hormonální narušení a&nbsp;chronický stres &ndash; ne deficit serotoninu. SSRIs nenapravují chemickou nerovnováhu; ukládají ji. Potlačují mitochondriální funkci, narušují endokrinní osu, vyvolávají přesně tu bezmocnost, kterou tvrdí, že léčí, a&nbsp;v&nbsp;malé, ale hrůzné podskupině případů spouštějí násilí, které nelze vysvětlit &ndash; dokud nepochopíte farmakologii.</p>
+
+    <p class="indent">Průmysl to ví. Recenzenti FDA, kteří tyto léky schválili, řekli na záznam, že byli uvedeni v&nbsp;omyl. Interní memoranda ukazují překlasifikování nežádoucích účinků, aby se skryla suicidálnost. Evropští regulátoři doporučili neschválit pro děti a&nbsp;byli ignorováni. A&nbsp;předpisy dál stoupaly &ndash; ne proto, že by léky fungovaly, ale protože systém, který je prodává, je robustnější než věda, která je zpochybňuje.</p>
+
+    <p class="indent"><strong>Průmysl směřující k&nbsp;třiceti miliardám se sám nekoriguje.</strong></p>
+
+    <p class="indent">Pokud právě teď bereš SSRI, toto není požadavek, abys přestal. Náhlé vysazení je nebezpečné a&nbsp;abstinenční syndrom, který tyto léky vyvolávají, je reálný &ndash; což je samo o&nbsp;sobě obžalobou. Pokud uvažuješ o&nbsp;snižování, musí se to dělat pomalu, hyperbolicky a&nbsp;pod dohledem. Druhá část této série podrobně popisuje hyperbolické snižování, spolu s&nbsp;metabolickými a&nbsp;hormonálními intervencemi, které řeší to, co SSRIs nikdy nemohly.</p>
+
+    <p class="indent">Ale zasloužíš si vědět, co bereš, co to dělá tvému tělu a&nbsp;jaké alternativy existují, o&nbsp;kterých ti tvůj předepisující lékař nikdy neřekl.</p>
+
+    <p class="indent"><strong>Klíče nikdy nebyly pod pouliční lampou. Vždy byly v&nbsp;parku.</strong></p>
+  </section>
+
+</div>
+
+<footer>
+  <div class="container">
+    <a href="#" style="color: var(--accent); text-decoration: none;">&uarr; Zpět nahoru</a>
+  </div>
+</footer>
+
+</body>
+</html>
